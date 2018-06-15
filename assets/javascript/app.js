@@ -1,8 +1,8 @@
 
 let row = 0;
 
-// let currentTime = moment().format("HHmm");
-// console.log(currentTime);
+let currentTime = moment();
+console.log(currentTime);
 
 
 
@@ -22,6 +22,8 @@ let row = 0;
   let dbName = "";
   let dbDestination = "";
   let dbFrequency = "";
+  let dbNextArrivalTime = "";
+  let dbMinsAway = "";
 
 
 database.ref().once("value", function(snapshot) {
@@ -44,6 +46,7 @@ database.ref().once("value", function(snapshot) {
         dbDestination = snapshot.child(key).val().destination;
         console.log(snapshot.child(key).val().frequency);
         dbFrequency = snapshot.child(key).val().frequency;
+        dbNextArrivalTime = snapshot.child(key).val().nextArrivalTime;
 
 
         
@@ -62,7 +65,7 @@ tr.append(td2);
 td3.text(dbFrequency);
 tr.append(td3);
 
-td4.text("tobecalc");
+td4.text(dbNextArrivalTime);
 tr.append(td4);
 
 td5.text("tobecalc");
@@ -79,6 +82,8 @@ tr.append(td5);
 
 $("#submitTrain").on("click", function(event) {
 
+    
+
     let tr = $("<tr>");
     let th = $("<th>");
     let td1 = $("<td>");
@@ -93,21 +98,51 @@ let firsTrain = $("#firstTime").val();
 let freq = parseInt($("#freq").val());
 console.log(firsTrain);
 let firsTrainConv = moment(firsTrain, "HHmm");
-let nextArrival = moment(firsTrainConv).add(freq,"m").format("HH:mm");
+let firstTrainValue = moment(firsTrain, "HHmm").format("hh:mm a");
+let checkFuture = firsTrainConv.diff(moment(),"minutes");
+let nextArrival ="";
+let minsAway= "";
+
+
+    nextArrival = firstTrainValue;
+
+   //nextArrival = moment(firsTrainConv).add(freq,"m").format("hh:mm a");
+
+
 let nextArrivalObj = moment(firsTrainConv).add(freq,"m");
 
-let minsAway = moment(nextArrivalObj).fromNow();
+if (checkFuture > 0){
+    minsAway = checkFuture;
+}
+else minsAway = 720 + checkFuture;
+
+
 
 console.log(minsAway);
 
 
 
 
+
+
+
+
+
+
+
+// console.log(firsTrainConv.diff(currentTime));
+
+// if (!moment().isBefore(firsTrainConv))
+// alert("time is before current time, enter a time in the fututre please")
+// else {
+
 database.ref().push({
 
     trainName: trainName,
     destination: destination,
-    frequency: freq
+    frequency: freq,
+    nextArrivalTime: nextArrival,
+    minutesAway: minsAway
 
 });
 
@@ -116,6 +151,9 @@ database.ref().on("child_added", function(snapshot){
     dbName = snapshot.val().trainName;
     dbDestination = snapshot.val().destination;
     dbFrequency = snapshot.val().frequency;
+    dbNextArrivalTime = snapshot.val().nextArrivalTime
+    dbMinsAway = snapshot.val().minutesAway
+
     
   
   });
@@ -135,11 +173,20 @@ tr.append(td2);
 td3.text(dbFrequency);
 tr.append(td3);
 
-td4.text("tobecalc");
+td4.text(dbNextArrivalTime);
 tr.append(td4);
 
-td5.text("tobecalc");
+td5.text(dbMinsAway);
 tr.append(td5);
+
+
+// }
+
+
+
+
+
+
 
 
 
