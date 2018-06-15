@@ -47,6 +47,7 @@ database.ref().once("value", function(snapshot) {
         console.log(snapshot.child(key).val().frequency);
         dbFrequency = snapshot.child(key).val().frequency;
         dbNextArrivalTime = snapshot.child(key).val().nextArrivalTime;
+        dbMinsAway = snapshot.child(key).val().minutesAway;
 
 
         
@@ -68,7 +69,7 @@ tr.append(td3);
 td4.text(dbNextArrivalTime);
 tr.append(td4);
 
-td5.text("tobecalc");
+td5.text(dbMinsAway);
 tr.append(td5);
         
 
@@ -114,7 +115,7 @@ let nextArrivalObj = moment(firsTrainConv).add(freq,"m");
 if (checkFuture > 0){
     minsAway = checkFuture;
 }
-else minsAway = 720 + checkFuture;
+else minsAway = 1440 + checkFuture;
 
 
 
